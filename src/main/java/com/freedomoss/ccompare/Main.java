@@ -44,14 +44,13 @@ public class Main {
         Company c1 = TOKENIZER.tokenize(company1);
         Company c2 = TOKENIZER.tokenize(company2);
 
-
         company1 = getNormalizedTitle(c1);
         company2 = getNormalizedTitle(c2);
 
-        for (String stopWord : stopWords) {
-            company1 = replace(company1, stopWord, " ");
-            company2 = replace(company2, stopWord, " ");
-        }
+//        for (String stopWord : stopWords) {
+//            company1 = replace(company1, stopWord, " ");
+//            company2 = replace(company2, stopWord, " ");
+//        }
 
         for (Map.Entry<String, String> synonym : synonyms.entrySet()) {
             company1 = replace(company1, synonym.getKey(), synonym.getValue());
@@ -237,7 +236,7 @@ public class Main {
 
     public static void main(String[] args) {
         Main m = new Main();
-        int confidence = m.compare("Crown Cork & Seal Co. Inc.", "DEVON ENERGY CORPORATION (NEVADA)");
+        int confidence = m.compare("United Technologies Corporation/NY", "UNITED TECHNOLOGIES CORPORATION OF NEW YORK CITY");
         System.out.println(confidence);
     }
 }

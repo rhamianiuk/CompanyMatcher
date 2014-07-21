@@ -3,6 +3,7 @@ package com.freedomoss.ccompare;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,17 +14,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
 public class Tokenizer {
 
-    private static Map<String, String> businessEntitySynonyms = Maps.newHashMap();
-    private static List<String> businessEntities = Lists.newArrayList();
+    private static final Map<String, String> businessEntitySynonyms = Maps.newHashMap();
+    private static final List<String> businessEntities = Lists.newArrayList();
+    private static final Map<String, String> synonyms = Maps.newHashMap();
+    private static final Set<String> stopWords = Sets.newHashSet();
 
     static {
         try {
             URL resource = Resources.getResource("business.entity.synonyms.dic");
+            URL synonymsDic = Resources.getResource("synonyms.dic");
+            URL stoplistDic = Resources.getResource("stoplist.dic");
+            List<String> stopWordsList = Resources.readLines(stoplistDic, Charset.defaultCharset());
+            for (String sw : stopWordsList) {
+                stopWords.add(sw.toLowerCase());
+            }
             List<String> file = Resources.readLines(resource, Charset.defaultCharset());
             for (String line : file) {
                 if (isNotBlank(line)) {
@@ -32,6 +42,12 @@ public class Tokenizer {
                     businessEntities.add(leftright[0]);
                     businessEntities.add(leftright[1]);
                 }
+            }
+
+            List<String> synFile = Resources.readLines(synonymsDic, Charset.defaultCharset());
+            for (String line : synFile) {
+                String[] leftRight = line.split("=");
+                synonyms.put(leftRight[1].toLowerCase(), leftRight[0].toLowerCase());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -66,15 +82,19 @@ public class Tokenizer {
     private List<Morpheme> split(String company) {
         Preconditions.checkArgument(isNotBlank(company));
         List<Morpheme> res = Lists.newArrayList();
-        String[] split = company.split("[\\(\\)/, .\"]");
+        String[] split = company.split("[-\\(\\)/, .\"]");
         int i = 0;
         for (String s : split) {
-            if (isNotBlank(s)) {
+            if (isNotBlank(s) && !stopWords.contains(s.toLowerCase())) {
 //                String[] morphemes = s.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
 //                for (String m : morphemes) {
 //                    res.add(new Morpheme(m, i));
 //                }
-                res.add(new Morpheme(s, i));
+                if (synonyms.containsKey(s.toLowerCase())) {
+                    res.add(new Morpheme(synonyms.get(s.toLowerCase()), i));
+                } else {
+                    res.add(new Morpheme(s, i));
+                }
                 i++;
             }
         }
