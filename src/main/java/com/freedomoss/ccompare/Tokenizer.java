@@ -13,7 +13,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import com.google.common.base.Optional;
 import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.*;
@@ -71,7 +71,7 @@ public class Tokenizer {
             }
             company = StringUtils.removeEndIgnoreCase(company, be.get());
         } else {
-            businessEntity = Optional.empty();
+            businessEntity = Optional.absent();
         }
 
         morphemes.addAll(split(company));
@@ -109,7 +109,7 @@ public class Tokenizer {
                 return Optional.of(businessEntity);
             }
         }
-        return Optional.empty();
+        return Optional.absent();
     }
 
 }

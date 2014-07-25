@@ -11,10 +11,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import com.google.common.base.Optional;
 
 public class Main {
 
@@ -120,7 +121,7 @@ public class Main {
             }
         }
 
-        matches.sort(new Comparator<MorphemeMatch>() {
+        Collections.sort(matches, new Comparator<MorphemeMatch>() {
             @Override
             public int compare(MorphemeMatch mm1, MorphemeMatch mm2) {
                 MorphemeMatch.Type t1 = mm1.type;

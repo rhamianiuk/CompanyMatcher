@@ -1,7 +1,7 @@
 package com.freedomoss.ccompare;
 
 import java.util.List;
-import java.util.Optional;
+import com.google.common.base.Optional;
 
 public class Company {
 
